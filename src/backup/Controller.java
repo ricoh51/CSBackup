@@ -5,8 +5,8 @@
 
     CSBackup is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation, either VERSION 3 of the License, or
+    (at your option) any later VERSION.
 
     CSBackup is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,11 +34,11 @@ import javax.swing.event.ListDataListener;
  */
 public class Controller  implements ListDataListener{
     /** Application name **/
-    private final String appName = "CSBackup";
-    /** Application version **/
-    private final String version = "0.1";
+    public final static String APPNAME = "CSBackup";
+    /** Application VERSION **/
+    public final static String VERSION = "0.2";
     /** Temporary dir prefix **/
-    private final String tmpPrefix = "CSBackup-";
+    private final static String TMPPREFIX = "CSBackup-";
     
     private final String extension = "csb";
     /** ListModels for JList **/
@@ -50,18 +50,21 @@ public class Controller  implements ListDataListener{
     /** Zip controller **/
     private final ZipHandler zip;
     /** Prefs controller **/
-    private final Prefs prefs;
+    private Prefs prefs;
     
     /** true if the project is saved **/
     private boolean saved;
 
-    private IBackup view;
+    private final IBackup view;
     
+    /**
+     * Constructor with UI
+     */
     public Controller(IBackup view){
         this.view = view;
         Path tmpDirPath = null;
         try { // tmp dir stuff
-            tmpDirPath = TmpHandler.cleanAndCreate(tmpPrefix);
+            tmpDirPath = TmpHandler.cleanAndCreate(TMPPREFIX);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Unable to create a tmp dir ! " + ex.getMessage(), "Error !", JOptionPane.ERROR_MESSAGE);
             quit();
@@ -76,11 +79,9 @@ public class Controller  implements ListDataListener{
         // datas
         csb = new CSB();
         // zip stuff
-        zip = new ZipHandler(tmpDirPath);
-        
+        zip = new ZipHandler(tmpDirPath); 
         setListModels();
         reset();
-        
         if (!prefs.getLastproject().trim().equals("")){
             openProject(new File(prefs.getLastproject()));
         } else {
@@ -89,6 +90,27 @@ public class Controller  implements ListDataListener{
         }
         
     }
+    /**
+     * Do one backup job, without UI
+     * @param csbName project file
+     */
+    public static void doConsoleJob(String csbName) throws BackupException, Exception{
+        File file = new File(csbName);
+        String ext = getExtension(file);
+        if (file.exists() && "csb".equals(ext)){
+            String json = Utils.loadTextDiskFile(file);
+            CSB csb = new CSB();
+            csb.fromJSON(json);
+            Path tmpDirPath = TmpHandler.cleanAndCreate(TMPPREFIX);
+            if (tmpDirPath != null){
+                ZipHandler zip = new ZipHandler(tmpDirPath); 
+                zip.zip(csb);
+            }
+        } else {
+            System.err.println("backup.Controller.doConsoleJob() : bad extension : " + ext + " (should be .csb)");
+        }
+    }
+    
     
     public String getProjectDir(){
         return csb.projectDir;
@@ -128,7 +150,7 @@ public class Controller  implements ListDataListener{
         ok &= !"".equals(csb.zipName.trim());
         ok &= whereLM.getSize() > 0;
         String projectName = mainFile == null ? "No name" : mainFile.getName();
-        view.setAppTitle(appName + " - " + version + ", [" + projectName + "]" + (saved ? "" : "*"));
+        view.setAppTitle(APPNAME + " - " + VERSION + ", [" + projectName + "]" + (saved ? "" : "*"));
         view.setBtns(view.ignoreSelected() >= 0, view.whereSelected() >= 0, ok);
     }
     
@@ -195,7 +217,7 @@ public class Controller  implements ListDataListener{
         }
     }
     
-    private String getExtension(File f){
+    private static String getExtension(File f){
         String ext = "";
         String path = f.getAbsolutePath();
         int i = path.lastIndexOf('.');

@@ -7,13 +7,25 @@ package backup;
 public class Main {
 
     public static void main(String[] args){
-        lookAndFeel();
-        java.awt.EventQueue.invokeLater(() -> {
-            View view = new View();
-            view.setVisible(true);
-            Controller controller = new Controller(view);
-            view.setController(controller);
-        });
+        if (args.length == 0){ // UI mode
+            lookAndFeel();
+            java.awt.EventQueue.invokeLater(() -> {
+                View view = new View();
+                view.setVisible(true);
+                Controller controller = new Controller(view);
+                view.setController(controller);
+            });
+        } else if (args.length == 1){ // console mode
+            System.out.println(Controller.APPNAME + " - " + Controller.VERSION);
+            System.out.println("pass a .csb filename as argument");
+            System.out.println("Starting backup ...");
+            try {
+                Controller.doConsoleJob(args[0]);
+                System.out.println("backup successfull !");
+            } catch (Exception ex) {
+                System.err.println("backup.Main.main() Error : " + ex.getMessage());
+            }
+        }
     }
     
     private static void lookAndFeel(){
