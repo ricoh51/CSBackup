@@ -137,6 +137,7 @@ public class Controller  implements ListDataListener{
     
     public final void openProject(File file){
         try {
+            reset();
             String json = Utils.loadTextDiskFile(file);
             csb.fromJSON(json);
             ignoreLM.removeAllElements();

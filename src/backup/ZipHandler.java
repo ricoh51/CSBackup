@@ -165,6 +165,10 @@ public class ZipHandler {
          * Add a dir to zip only if rejected (so dir is in the zip and empty)
          */
         @Override  public FileVisitResult preVisitDirectory(Path dirPath, BasicFileAttributes aAttrs) throws IOException {
+            boolean hidden = dirPath.toFile().isHidden();
+            if (hidden) {
+                return FileVisitResult.SKIP_SUBTREE;
+            }
             if (acceptDir(dirPath)){
                 return FileVisitResult.CONTINUE;
             }
@@ -174,6 +178,9 @@ public class ZipHandler {
                 }
                 return FileVisitResult.SKIP_SUBTREE;
             }
+
+ 
+
         }
         
   }
