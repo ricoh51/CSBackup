@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Enumeration;
 import javax.swing.DefaultListModel;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
@@ -46,8 +45,6 @@ public class Controller  implements ListDataListener{
     private DefaultListModel ignoreLM, whereLM;
     /** Datas Model **/
     private final CSB csb;
-    /** project chooser **/
-    private JFileChooser chooserDialog;
     /** project file **/
     private File mainFile;
     /** Zip controller **/
@@ -67,7 +64,7 @@ public class Controller  implements ListDataListener{
             tmpDirPath = TmpHandler.cleanAndCreate(tmpPrefix);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Unable to create a tmp dir ! " + ex.getMessage(), "Error !", JOptionPane.ERROR_MESSAGE);
-            System.exit(0);
+            quit();
         }
         // project prefs
         prefs = new Prefs(this.getClass());
@@ -216,7 +213,7 @@ public class Controller  implements ListDataListener{
         return f;
     }
     
-    public void quit(){
+    public final void quit(){
         System.exit(0);
     }
     
@@ -283,6 +280,7 @@ public class Controller  implements ListDataListener{
         if (saved){
             try {
                 zip.zip(csb);
+                JOptionPane.showMessageDialog(null, "Backup finished ", "Backup !", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, "Unable to zip the project ! : " + ex.getMessage(), "Error !", JOptionPane.ERROR_MESSAGE);
             }
