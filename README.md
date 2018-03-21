@@ -1,6 +1,8 @@
 # CSBackup
-Small java backup tool : 
+Small java backup tool
+
 Zip a folder and make multiple copies
+
 UI mode :
   - create a project and save it
   - choose a folder to backup
